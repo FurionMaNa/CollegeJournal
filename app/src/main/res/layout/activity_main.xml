@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" android:orientation="vertical">
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content">
+        <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal">
+            <TableRow
+                    android:layout_width="fill_parent"
+                    android:gravity="center_horizontal">
+                <EditText
+                        android:importantForAutofill="no"
+                        tools:targetApi="o"
+                        android:text="192.168.0.103"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:hint="IP Адрес"
+                        android:ems="10"
+                        tools:layout_editor_absoluteY="0dp"
+                        tools:layout_editor_absoluteX="84dp"
+                        android:id="@+id/editIpText"/>
+            </TableRow>
+            <TableRow
+                    android:layout_width="fill_parent"
+                    android:gravity="center_horizontal"/>
+        </TableLayout>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content">
+        <Button
+                android:importantForAutofill="no"
+                tools:targetApi="o"
+                android:text="Подключиться"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:layout_editor_absoluteY="152dp"
+                tools:layout_editor_absoluteX="142dp"
+                android:id="@+id/btnCon"
+                android:onClick="onClickAccept"
+                android:background="@drawable/gradient_button"/>
+    </LinearLayout>
+
+</LinearLayout>

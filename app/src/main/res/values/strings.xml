@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Оценки</string>
+    <string name="app_button_back">Назад</string>
+    <string name="app_button_next">Вперёд</string>
+    <string name="Save">Сохранить</string>
+    <string name="attendance">Посещаемость</string>
+    <string name="mark">Оценка</string>
+    <string name="FIO">ФИО</string>
+    <string name="textview">TextView</string>
+    <string name="Refresh">Обновить</string>
+    <string name="Setting">Настройки</string>
+    <string name="TextSetting1">Выберите цвет:</string>
+    <string name="ToApply">Применить</string>
+    <string name="ToBringBack">Отменить</string>
+    <string name="Standard">Стандартные</string>
+    <string name="Exit">Выход</string>
+</resources>

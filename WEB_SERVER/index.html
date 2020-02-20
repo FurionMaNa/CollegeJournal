@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script type="text/javascript" src="jquery.js"></script>
+		<script type="text/javascript" src="Bootstrap\js\bootstrap.js"></script>
+		<link rel="stylesheet" type="text/css" href="Bootstrap\css\bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="style.css">
+	</head>
+	<body id="Body" name="Body">
+		<HEADER>
+			
+		</HEADER>
+		<div class="conteiner">
+			<div class="row-fluid">
+				<div class="span12">
+					<select class="form-control" id="GroupSelect" name="GroupSelect"></select>
+				</div>			
+			</div>
+			<div class="row-fluid">
+				<div class="span12">
+					<select class="form-control" id="SubjectSelect" name="SubjectSelect"></select>
+				</div>			
+			</div>
+			<div class="row">
+				<div class="col-4">
+					<input style="height:148px" type="button" class="form-control" id="btnBack" name="btnBack" value="Назад">
+				</div>
+				<div class="col-4">
+					<TABLE style="height:148px" id="tblDate" name="tblDate" class="table table-bordered"></TABLE>
+				</div>
+				<div class="col-4">
+					<input style="height:148px" type="button" class="form-control" id="btnNext" name="btnNext" value="Вперёд">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<TABLE id="tblBook" name="tblBook" class="table table-sm table-dark">
+						<tr>
+							<th>Фамилия Имя Отчество</th>
+							<th>Оценка</th>
+							<th>Посещаемость</th>
+						</tr>
+					</TABLE>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			$("#tblBook").html("<tr><th>Фамилия Имя Отчество</th><th>Оценка</th><th>Посещаемость</th></tr>");
+			var Group=new Array();
+			var Subject=new Array();
+			var Dates=new Array();
+			var Dat=new Array();
+			var Num=new Array();
+			var Book=new Array();
+			var SelectSubject=0;
+			var NumDate=0;
+			$(document).ready(function(){
+				$.ajax({ 
+						url: "groups.php",
+				    	success: function(msg){	
+				    		Group=JSON.parse(msg);
+				    		for(var i=0;i<Group.length;i++){
+				    			$("#GroupSelect").append($("<option></option>").attr("value",Group[i].GRO_ID).text(Group[i].NAME)); 
+				    		}
+				    		RefreshSubject();
+				    	}
+
+				});
+			});
+			$("#GroupSelect").change(function(){RefreshSubject()});
+			$("#SubjectSelect").change(function(){RefreshDate()});
+			$("#btnNext").click(function(){
+				if(SelectSubject<Num.length-1){
+					SelectSubject++;
+					TableDatCreate();
+				}
+			});
+			$("#btnBack").click(function(){
+				if(SelectSubject>0){
+					SelectSubject--;
+					TableDatCreate();
+				}
+			});
+			function RefreshSubject(){
+				$.ajax({ 
+					type: "GET",
+					url: "subject.php",
+					data: "id="+$("#GroupSelect").val(),
+					success: function(msg){	
+						Subject=JSON.parse(msg);
+						for(var i=0;i<Subject.length;i++){
+					   		$("#SubjectSelect").append($("<option></option>").attr("value",Subject[i].SUB_ID).text(Subject[i].NAME)); 
+					  	}
+					  	RefreshDate();
+					}
+				});	
+			}
+			function RefreshDate(){
+				$.ajax({ 
+					type: "GET",
+					url: "Date.php",
+					data: "idg="+$("#GroupSelect").val()+"&ids="+$("#SubjectSelect").val(),
+					success: function(msg){	
+						Dates=JSON.parse(msg);
+						Num=[];
+						var j=0;
+						var f=true;
+						for(var i=0;i<Dates.length;i++){
+							if(Num.length>0){
+								f=true;
+								for(j=0;j<Num.length;j++){
+									if(Num[j]==Dates[i].NUM){
+										f=false;
+										break;
+									}
+								}
+								if(f){
+									Num.push(Dates[i].NUM);
+								}
+							}else{
+								Num.push(Dates[0].NUM);
+							}
+						}
+						TableDatCreate();
+					}
+				});	
+			}
+			function DatCreate(NumS){
+				Dat=[];
+				for(var i=0;i<Dates.length;i++){
+					if(Num[NumS]==Dates[i].NUM){
+						Dat.push(Dates[i].LESSON_DATE);
+						NumDate=Dates[i].LPR_ID;
+					}
+				}	
+			}
+			function TableDatCreate(){
+				$("#tblDate").html("");
+				DatCreate(SelectSubject);
+				for(var i=0;i<3;i++){
+					if(i<Dat.length){
+						if(i==0){
+							$("#tblDate").append("<tr><td style='text-align:center'  rowspan='3'>"+Num[SelectSubject]+"</td><td>"+Dates[i].LESSON_DATE+"</td></tr>");
+						}else{
+							$("#tblDate").append("<tr><td>"+Dates[i].LESSON_DATE+"</td></tr>");
+						}
+					}else{
+						$("#tblDate").append("<tr><td> </td></tr>");
+					}
+				}
+				TableBookCreate();
+			}
+
+			function TableBookCreate(){
+				DatCreate(SelectSubject);
+				$.ajax({ 
+					type: "GET",
+					url: "Book.php",
+					data: "idg="+$("#GroupSelect").val()+"&lpr="+NumDate,
+					success: function(msg){	
+						Book=[];
+						$("#tblBook").html("<tr><th>Фамилия Имя Отчество</th><th>Оценка</th><th>Посещаемость</th></tr>");
+						Book=JSON.parse(msg);
+						for(var i=0;i<Book.length;i++){
+							if((Book[i].marName!=null)&&(Book[i].SIGN!=null)){
+								$("#tblBook").append("<tr><td>"+Book[i].NAME+"</td><td>"+Book[i].marName+"</td><td>"+Book[i].SIGN+"</td></tr>");
+							}else{
+								if((Book[i].marName==null)&&(Book[i].SIGN!=null)){
+									$("#tblBook").append("<tr><td>"+Book[i].NAME+"</td><td></td><td>"+Book[i].SIGN+"</td></tr>");
+								}else{
+									if((Book[i].marName!=null)&&(Book[i].SIGN==null)){
+										$("#tblBook").append("<tr><td>"+Book[i].NAME+"</td><td>"+Book[i].marName+"</td><td></td></tr>");
+									}else{
+										$("#tblBook").append("<tr><td>"+Book[i].NAME+"</td><td></td><td></td></tr>");
+									}
+								}
+							}
+						}
+					}
+				});	
+			}
+		</script>
+		<footer>
+			
+		</footer>
+		<script type="text/javascript" src="Bootstrap\js\bootstrap.js"></script>
+		<link rel="stylesheet" type="text/css" href="Bootstrap\css\bootstrap.css">
+	</body>
+</html>
